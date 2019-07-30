@@ -1,15 +1,32 @@
 
 var firebaseConfig = {
-    apiKey: "AIzaSyCqHu5QWNuKtXsu5QJOO_chkuwagAYJEok",
-    authDomain: "train-scheduler-701a0.firebaseapp.com",
-    databaseURL: "https://train-scheduler-701a0.firebaseio.com",
-    projectId: "train-scheduler-701a0",
+    apiKey: "AIzaSyA6k2WLjpA78K1rsNlRl7K2jcM0rILkkLs",
+    authDomain: "projectname-8d1ad.firebaseapp.com",
+    databaseURL: "https://projectname-8d1ad.firebaseio.com",
+    projectId: "projectname-8d1ad",
     storageBucket: "",
+    messagingSenderId: "945579325544",
+    appId: "1:945579325544:web:d0eb09ca59574b74"
 };
 
 firebase.initializeApp(firebaseConfig);
 
 var database = firebase.database();
+var connectionsRef = database.ref("/connections");
+var connectedRef = database.ref(".info/connected");
+
+connectedRef.on("value", function (snap) {
+
+    if (snap.val()) {
+        var con = connectionsRef.push(true);
+        con.onDisconnect().remove();
+    }
+});
+
+connectionsRef.on("value", function (snapshot) {
+
+    $("#train-table > tbody").text(snapshot.numChildren());
+});
 
 $("#add-train-btn").on("click", function (event) {
     event.preventDefault();
@@ -40,7 +57,6 @@ $("#add-train-btn").on("click", function (event) {
         var trainName = childSnapshot.val().name;
         var trainDestination = childSnapshot.val().destination;
         var firstTrain = childSnapshot.val().first;
-        var trainFrequency = childSnapshot.val().frequency;
 
         var frequency = parseInt(frequency);
 
@@ -65,6 +81,5 @@ $("#add-train-btn").on("click", function (event) {
         );
 
         $("#train-table > tbody").append(newRow);
-
     });
 });
